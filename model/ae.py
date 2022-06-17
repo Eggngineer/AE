@@ -9,20 +9,15 @@ class Encoder(nn.Module):
     super(Encoder, self).__init__()
     self.fc = nn.Linear(input_dim, hidden_dim)
     self.fc_mu = nn.Linear(hidden_dim, latent_dim)
-    self.fc_var = nn.Linear(hidden_dim, latent_dim)
 
   def forward(self, x):
     h = torch.relu(self.fc(x))
     mu = self.fc_mu(h)
-    log_var = self.fc_var(h)
 
-    eps = torch.randn_like(torch.exp(log_var))
-    z = mu + torch.exp(log_var / 2) * eps 
-
-    return mu, log_var, z
+    return mu, None
 
 
-# class : Decoer 
+# class : Decoer
 class Decoder(nn.Module):
   def __init__(self, input_dim, hidden_dim, latent_dim):
     super(Decoder, self).__init__()
@@ -35,7 +30,7 @@ class Decoder(nn.Module):
     return output 
 
 
-# class : VAE
+# class : AE
 class AE(nn.Module):
   def __init__(self, input_dim, hidden_dim, latent_dim):
     super(AE, self).__init__()
@@ -43,6 +38,6 @@ class AE(nn.Module):
     self.decoder = Decoder(input_dim, hidden_dim, latent_dim)
 
   def forward(self, x):
-    mu, log_var, z = self.encoder(x)
-    x_decoded = self.decoder(z)
-    return x_decoded, mu, log_var, z
+    mu, _ = self.encoder(x)
+    x_decoded = self.decoder(mu)
+    return x_decoded, mu
