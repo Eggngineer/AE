@@ -2,3 +2,4 @@
 data/MNIST
 wandb
 wb
+view_dataset.py
